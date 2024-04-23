@@ -1,5 +1,7 @@
 const bcrypt = require('bcryptjs'); 
 const USERS = require('../models/user');
+const BARBER = require('../models/barber');
+const ADMINISTRADOR = require('../models/admin');
 
 const getUsers = async (req, res, next) => {
   console.log("getUsers()");
@@ -12,28 +14,80 @@ const getUsers = async (req, res, next) => {
   }
 };
 
-const createUser = async (req, res, next) => {
-   console.log("createUser()",req.body);
-   const { nombre, correo , password, datos_personales = "", historial_servicios = [] } = req.body;
-  try {
-        const hashedPassword = await bcrypt.hash(password, 10); // Hashing the password using bcryptjs
-        const newProduct = new USERS({ 
-            nombre,
-            correo,
-            password: hashedPassword, // Saving the hashed password
-            datos_personales,
-            historial_servicios
-        });
+//Verifica si existe el correo en usuarios, barberos o admins, si existe, retorna su ROL, si no, crea un usuario por que ya se validó en google auth
+const existeUsuario = async (req, res, next) => {
+    const correo = req.query.correo;
 
-        await newProduct.save();
-        console.error("[exito] postProduct");
-       res.json({  error: null, success: true, message: "Usuario registrado" });
-        
+    try {
+        // Buscar en la tabla de usuarios
+        let usuario = await USERS.findOne({ correo: correo });
+
+        if (usuario) {
+            // Si se encuentra en la tabla de usuarios, retornar el rol
+            res.json({data:{ encontrado: true, rol: 'USUARIO'} , error: null, success: true, });
+            return;
+        }
+
+        // Si no se encuentra en la tabla de usuarios, buscar en la tabla de barberos
+        let barbero = await BARBER.findOne({ correo: correo });
+
+        if (barbero) {
+            // Si se encuentra en la tabla de barberos, retornar el rol
+          res.json({data:{ encontrado: true, rol: 'BARBERO'} , error: null, success: true, });
+            return;
+        }
+
+        // Si no se encuentra en la tabla de barberos, buscar en la tabla de administradores
+        let admin = await ADMINISTRADOR.findOne({ correo: correo });
+
+        if (admin) {
+            // Si se encuentra en la tabla de administradores, retornar el rol
+          res.json({data:{ encontrado: true, rol: 'ADMINISTRADOR'} , error: null, success: true, });
+            return;
+        }
+
+        // Si no se encuentra en ninguna tabla, retornar como no encontrado
+        res.json({data:{ encontrado: false, rol: ''} , error: false, success: true, });
     } catch (error) {
-        console.error("Error al crear un nuevo usuario:", error);
-       res.json({  error: true, success: false, error: error, message:`Error al crear Usuario`  });
-    } 
-}
+        console.error('Error al buscar el correo:', error);
+         res.json({ success: false, error: error, message:`Error al buscar el correo del usuario en las colecciones.`  });
+    }
+};
+
+const createUser = async (req, res, next) => {
+  console.log("createUser()", req.body);
+  const { nombre, correo, password, datos_personales = "", historial_servicios = [] } = req.body;
+
+  try {
+    // Verificar si el correo electrónico ya está en uso
+    const usuarioExistente = await USERS.findOne({ correo: correo });
+    if (usuarioExistente) {
+      return res.status(400).json({ success: false, error: 'El correo electrónico ya está en uso' });
+    }
+
+    // Hash de la contraseña utilizando bcryptjs
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Crear un nuevo usuario con los datos proporcionados
+    const nuevoUsuario = new USERS({
+      nombre,
+      correo,
+      password: hashedPassword,
+      datos_personales,
+      historial_servicios
+    });
+
+    // Guardar el nuevo usuario en la base de datos
+    await nuevoUsuario.save();
+
+    console.log("[éxito] Usuario creado con éxito");
+    return res.json({ success: true, message: "Usuario registrado" });
+  } catch (error) {
+    console.error("Error al crear un nuevo usuario:", error);
+    return res.status(500).json({ success: false, error: 'Error al crear un nuevo usuario' });
+  }
+};
+
 
 const deleteUser = async (req, res, next) => {
     console.log("deleteUser()");
@@ -50,7 +104,7 @@ const deleteUser = async (req, res, next) => {
       res.json({  error: null, success: true, message: "Usuario eliminado exitosamente" });
     } catch (error) {
         console.error("Error al eliminar el usuario:", error);
-      res.json({ error: true, success: false, error: error,message:`No se pudo eliminar el usuario con id [${id}}]`  });
+      res.json({  success: false, error: error,message:`No se pudo eliminar el usuario con id [${id}}]`  });
     }
 };
 
@@ -79,6 +133,7 @@ const updateUser = async (req, res, next) => {
 
 module.exports = {
   getUsers,
+  existeUsuario,
   createUser,
   deleteUser,
   updateUser

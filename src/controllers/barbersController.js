@@ -44,17 +44,20 @@ const createBarber = async (req, res, next) => {
 
 // Actualizar un barbero existente
 const updatePassword= async (req, res, next) => {
+  console.log("updatePassword()")
   try {
-    const { id } = req.params;
-     const { password } = req.params;
+     const { id } = req.params;
+      const hashedPassword = await bcrypt.hash(req.body.password, 10); 
+    console.log(" hashedPassword",hashedPassword)
+      req.body.password=hashedPassword;
     const updatedBarber = await Barber.findByIdAndUpdate(id, req.body, { new: true });
     if (!updatedBarber) {
       return res.status(404).json({ success: false, error: 'Barbero no encontrado' });
     }
-    console.error("[Éxito] Barbero actualizado:", updatedBarber);
+    console.error("[Éxito] Barbero.updatePassword actualizado:");
     res.json({ data: updatedBarber, error: null, success: true });
   } catch (error) {
-    console.error("Error al actualizar el barbero:", error);
+    console.error("Error al actualizar el Barbero.updatePassword:", error);
     res.status(500).json({ error: "Error al actualizar el barbero", success: false });
   }
 };
@@ -62,12 +65,13 @@ const updatePassword= async (req, res, next) => {
 
 // Actualizar un barbero existente
 const updateBarber = async (req, res, next) => {
+    console.log("updateBarber()")
+  console.log(" req.body", req.body)
   try {
     const { id } = req.params;
-        console.log(" req.body.password", req.body.password)
-    const hashedPassword = await bcrypt.hash(req.body.password, 10); 
-    console.log(" hashedPassword",hashedPassword)
-      req.body.password=hashedPassword;
+    // const hashedPassword = await bcrypt.hash(req.body.password, 10); 
+    // console.log(" hashedPassword",hashedPassword)
+    //   req.body.password=hashedPassword;
     const updatedBarber = await Barber.findByIdAndUpdate(id, req.body, { new: true });
     if (!updatedBarber) {
       return res.status(404).json({ success: false, error: 'Barbero no encontrado' });

@@ -15,9 +15,11 @@ const userSchema = new mongoose.Schema({
   },
     rol: {
     type: String,
-   
     default: "CLIENTE" 
   },
+ imagen: {
+    type: String,
+    default: "" },
 
   datos_personales: {
       telefono: { type: String, default: "" },
@@ -26,7 +28,7 @@ const userSchema = new mongoose.Schema({
       ciudad: { type: String, default: "" },
       estado: { type: String, default: "" },
       cp: { type: String, default: "" },
-      imagen: { type: String, default: "" },
+  
   },
   historial_servicios: []
 });

@@ -31,8 +31,9 @@ const productSchema = new Schema({
     type: Boolean,
     default:true
   },
-  images: {
-    type: [String],
+  imagenes: {
+    type: Array,
+    default: []
   },
 
   createdAt: {

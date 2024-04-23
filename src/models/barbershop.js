@@ -41,9 +41,9 @@ const barberiaSchema = new mongoose.Schema({
     type: String,
     default: ""
   },
-  imagen: {
-    type: String,
-    default: ""
+  imagenes: {
+    type: Array,
+    default: []
   },
   descripcion: {
     type: String,

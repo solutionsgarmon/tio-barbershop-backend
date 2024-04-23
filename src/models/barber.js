@@ -132,6 +132,11 @@ const barberoSchema = new mongoose.Schema({
     enum: ['ACTIVO', 'INACTIVO'],
     default: 'ACTIVO'
   },
+   descanso: {
+    type: String,
+    enum: ['SI', 'NO'],
+    default: 'NO'
+  },
 
     datos_personales: {
       telefono: { type: String, default: "" },
@@ -140,13 +145,26 @@ const barberoSchema = new mongoose.Schema({
       ciudad: { type: String, default: "" },
       estado: { type: String, default: "" },
       cp: { type: String, default: "" },
-      imagen: { type: String, default: "" },
+     
   },
 servicios_realizados: [{
     fecha: { type: Date, required: true },
     servicio: { type: String, required: true },
     costo: { type: Number, required: true },
-  }]
+  }], 
+
+    imagenes: {
+    type: [{
+      url: { type: String, default: 'default-url' },
+      id: { type: String, default: 'default-alt' },
+      path: { type: String, default: 'default-descripcion' }
+    }],
+    default: [{ 
+      url: 'https://firebasestorage.googleapis.com/v0/b/storage-eltio-barbershop.appspot.com/o/barbers%2Fbarbero.png?alt=media&token=f2ed44d8-1d3b-43a5-bfa7-7cbdd6db93cb',
+      id: 'https://firebasestorage.googleapis.com/v0/b/storage-eltio-barbershop.appspot.com/o/barbers%2Fbarbero.png?alt=media&token=f2ed44d8-1d3b-43a5-bfa7-7cbdd6db93cb',
+      path: ''
+    }]
+  }
 
 
 });

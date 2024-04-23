@@ -12,7 +12,9 @@ const getProducts = async (req, res, next) => {
 };
 
 const getProductById = async (req, res, next) => {
-  try {
+  try 
+  {
+  // {const { id } = req.params;
     const productId = req.params.id;
     const product = await Product.findById(productId);
     if (!product) {

@@ -5,21 +5,23 @@ const servicioSchema = new mongoose.Schema({
     type: String,
      required: true 
   },
- tipo: {
-    type: String,
-     default: ''
+ categorias: {
+    type: Array,
   },
   precio: {
     type: Number,
      default: 0
   },
+  duracion:{
+    type: Number,
+     default: 0
+  },     
   descripcion: {
     type: String,
      default: ''
   },
   imagenes: [],
-  barberias: [],
-  barberos: []
+
 });
 
 

@@ -1,10 +1,6 @@
 const mongoose = require('mongoose');
 
 const citaSchema = new mongoose.Schema({
-   cliente: {
-    type: String,
-    required: true
-  },
 
   servicio_asignado: {
     type: String,
@@ -16,15 +12,18 @@ const citaSchema = new mongoose.Schema({
    barberia_asignada: {
     type: String
   },
-    hora_asignada: {
+    hora_inicio_asignada: {
     type: String,
     required: true
   },
-    fecha: {
-    type: Date,
+    hora_fin_asignada: {
+    type: String,
     required: true
   },
-
+    fecha_asignada: {
+    type: String,
+    required: true
+  },
     estatus: {
       type: String,
       enum: ['PENDIENTE', 'COMPLETADA', 'CANCELADA','POSPUESTA'],
@@ -34,8 +33,7 @@ const citaSchema = new mongoose.Schema({
     type: String
   },
   fecha_creacion: {
-    type: Date,
-    default: Date.now
+    type: String,
   },
   fecha_actualizacion: {    
     type: Array
@@ -51,6 +49,18 @@ const citaSchema = new mongoose.Schema({
       type: String,
       enum: ['SI','NO'],
       default: "SI"
+    }
+  },
+  datos_cliente: {
+    nombre: {
+      type: String,
+    },
+    telefono: {
+      type: String,
+
+    },
+    correo: {
+      type: String,
     }
   }
 });

@@ -18,12 +18,15 @@ router.post('/login', authController.loginUser);
 
  //USERS 
  router.get('/users',usersController.getUsers);
+  router.get('/users/existe-usuario', usersController.existeUsuario);
  router.post('/users',usersController.createUser);
  router.delete('/users',usersController.deleteUser);
  router.patch('/users/:id', usersController.updateUser);
+ 
 
 // BARBERS
 router.get('/barbers', barbersController.getBarbers);
+router.get('/barber/:id', barbersController.getBarberById);
 router.post('/barbers', barbersController.createBarber);
 router.patch('/barbers/update-password/:id', barbersController.updatePassword);
 router.delete('/barbers/:id', barbersController.deleteBarber);
