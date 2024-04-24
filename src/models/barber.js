@@ -22,6 +22,20 @@ const barberoSchema = new mongoose.Schema({
      default: ''
   },
   horario: {
+        domingo: {
+      trabaja: {
+      type: String,
+      default: 'N'
+    },
+    hora_inicio: {
+      type: String,
+       default: ''
+     }, 
+     hora_fin: {
+      type: String,
+       default: ''
+     }
+    },
     lunes: {
       trabaja: {
       type: String,
@@ -93,20 +107,6 @@ const barberoSchema = new mongoose.Schema({
       }
     },
     sabado: {
-      trabaja: {
-      type: String,
-      default: 'N'
-    },
-    hora_inicio: {
-      type: String,
-       default: ''
-     }, 
-     hora_fin: {
-      type: String,
-       default: ''
-     }
-    },
-    domingo: {
       trabaja: {
       type: String,
       default: 'N'

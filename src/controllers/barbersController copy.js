@@ -29,8 +29,8 @@ const getBarberById = async (req, res, next) => {
 };
 
 const getHorarioDisponibleBarbero = async (req, res, next) => {
-  console.log(">>>>> getHorarioDisponibleBarbero");
-  console.log("req.body", req.body);
+  console.log(">>>>> getHorarioDisponibleBarbero")
+  console.log("req.body",req.body)
   const { idBarbero, idServicio } = req.body;
 
   try {
@@ -38,64 +38,56 @@ const getHorarioDisponibleBarbero = async (req, res, next) => {
     const service = await Service.findById(idServicio);
 
     // Obtener todas las citas programadas futuras para el barbero seleccionado
-    const citasProgramadas = await Cita.find({ 
+ const citasProgramadas = await Cita.find({ 
       barbero_asignado: idBarbero,
       fecha_asignada: { $gte: new Date().toISOString().split('T')[0] } // Filtrar citas con fecha futura o igual a hoy
     });
-    
-    console.log("Citas Programadas:", citasProgramadas);
-    console.log("Horario del Barbero:", barber.horario);
+
 
     // Calcular horarios disponibles
     const horarioDisponible = {};
+
+    // Obtener la duración del servicio en minutos
+    const duracionServicio = service.duracion; // Suponiendo que la duración se almacena en minutos
+
+    // Definir el horario de trabajo del barbero (por ejemplo, de 8:00 AM a 6:00 PM)
+    // ********  E J E M P L O ***********//
+    const horaInicioTrabajo = 8 * 60; // 8:00 AM en minutos
+    const horaFinTrabajo = 18 * 60; // 6:00 PM en minutos
 
     // Iterar sobre los próximos 15 días
     for (let i = 0; i < 15; i++) {
       const fecha = new Date();
       fecha.setDate(fecha.getDate() + i);
-      const diaSemana = fecha.getDay(); // 0 para Domingo, 1 para Lunes, ..., 6 para Sábado
+      const fechaFormato = fecha.toISOString().split('T')[0]; // Formato YYYY-MM-DD
 
-      // Obtener el horario de trabajo del barbero para este día de la semana
-      const horarioDiaBarbero = barber.horario[Object.keys(barber.horario)[diaSemana]];
+      // Inicializar el horario disponible para esta fecha
+      const horarioDia = [];
 
-      // Verificar si el barbero trabaja en este día
-      if (horarioDiaBarbero.trabaja === 'S') {
-        const horaInicioTrabajo = parseInt(horarioDiaBarbero.hora_inicio.split(':')[0]) * 60 + parseInt(horarioDiaBarbero.hora_inicio.split(':')[1]);
-        const horaFinTrabajo = parseInt(horarioDiaBarbero.hora_fin.split(':')[0]) * 60 + parseInt(horarioDiaBarbero.hora_fin.split(':')[1]);
+      // Iterar sobre cada intervalo de 10 minutos en el horario de trabajo
+      for (let hora = horaInicioTrabajo; hora < horaFinTrabajo; hora += 10) {
+        let horaDisponible = true;
 
-        // Inicializar el horario disponible para este día
-        const horarioDia = [];
+        // Verificar si hay alguna cita programada durante este intervalo de tiempo
+        for (const cita of citasProgramadas) {
+          const horaInicioCita = parseInt(cita.hora_inicio_asignada.split(':')[0]) * 60 + parseInt(cita.hora_inicio_asignada.split(':')[1]);
+          const horaFinCita = parseInt(cita.hora_fin_asignada.split(':')[0]) * 60 + parseInt(cita.hora_fin_asignada.split(':')[1]);
 
-        // Iterar sobre cada intervalo de 10 minutos en el horario de trabajo
-        for (let hora = horaInicioTrabajo; hora < horaFinTrabajo; hora += 10) {
-          let horaDisponible = true;
-
-          // Verificar si hay alguna cita programada durante este intervalo de tiempo
-          for (const cita of citasProgramadas) {
-            const horaInicioCita = parseInt(cita.hora_inicio_asignada.split(':')[0]) * 60 + parseInt(cita.hora_inicio_asignada.split(':')[1]);
-            const horaFinCita = parseInt(cita.hora_fin_asignada.split(':')[0]) * 60 + parseInt(cita.hora_fin_asignada.split(':')[1]);
-
-            // Verificar si la cita se superpone con el intervalo de tiempo actual
-            if (hora >= horaInicioCita && hora < horaFinCita) {
-              horaDisponible = false;
-              break;
-            }
-          }
-
-          // Si el intervalo de tiempo actual no se superpone con ninguna cita, agregarlo al horario disponible
-          if (horaDisponible) {
-            horarioDia.push(`${String(Math.floor(hora / 60)).padStart(2, '0')}:${String(hora % 60).padStart(2, '0')}`);
+          // Verificar si la cita se superpone con el intervalo de tiempo actual
+          if (hora >= horaInicioCita && hora < horaFinCita) {
+            horaDisponible = false;
+            break;
           }
         }
 
-        // Agregar el horario disponible para este día al objeto horarioDisponible
-        const fechaFormato = fecha.toISOString().split('T')[0]; // Formato YYYY-MM-DD
-        horarioDisponible[fechaFormato] = horarioDia;
-      } else {
-        // Si el barbero no trabaja en este día, agregar un arreglo vacío al horario disponible
-        const fechaFormato = fecha.toISOString().split('T')[0]; // Formato YYYY-MM-DD
-        horarioDisponible[fechaFormato] = [];
+        // Si el intervalo de tiempo actual no se superpone con ninguna cita, agregarlo al horario disponible
+        if (horaDisponible) {
+          horarioDia.push(`${String(Math.floor(hora / 60)).padStart(2, '0')}:${String(hora % 60).padStart(2, '0')}`);
+        }
       }
+
+      // Agregar el horario disponible para esta fecha al objeto horarioDisponible
+      horarioDisponible[fechaFormato] = horarioDia;
     }
 
     // Enviar respuesta con los horarios disponibles
@@ -106,8 +98,7 @@ const getHorarioDisponibleBarbero = async (req, res, next) => {
   }
 };
 
-
-
+// Crear un nuevo barbero
 const createBarber = async (req, res, next) => {
   console.log("createBarber()")
   try {
