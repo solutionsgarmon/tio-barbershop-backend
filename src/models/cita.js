@@ -61,6 +61,9 @@ const citaSchema = new mongoose.Schema({
     },
     correo: {
       type: String,
+    },
+     imagen: {
+      type: String,
     }
   }
 });

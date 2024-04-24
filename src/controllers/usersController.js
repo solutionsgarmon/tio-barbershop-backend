@@ -24,7 +24,7 @@ const existeUsuario = async (req, res, next) => {
 
         if (usuario) {
             // Si se encuentra en la tabla de usuarios, retornar el rol
-            res.json({data:{ encontrado: true, rol: 'USUARIO'} , error: null, success: true, });
+            res.json({data:{ encontrado: true, rol: 'CLIENTE'} , error: null, success: true, });
             return;
         }
 
@@ -56,7 +56,7 @@ const existeUsuario = async (req, res, next) => {
 
 const createUser = async (req, res, next) => {
   console.log("createUser()", req.body);
-  const { nombre, correo, password, datos_personales = "", historial_servicios = [] } = req.body;
+  const { nombre, correo, password, imagen,datos_personales = "", historial_servicios = [] } = req.body;
 
   try {
     // Verificar si el correo electrónico ya está en uso
@@ -74,7 +74,8 @@ const createUser = async (req, res, next) => {
       correo,
       password: hashedPassword,
       datos_personales,
-      historial_servicios
+      historial_servicios,
+      imagen,
     });
 
     // Guardar el nuevo usuario en la base de datos

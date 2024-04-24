@@ -19,7 +19,8 @@ const userSchema = new mongoose.Schema({
   },
  imagen: {
     type: String,
-    default: "" },
+    default: ""
+   },
 
   datos_personales: {
       telefono: { type: String, default: "" },
