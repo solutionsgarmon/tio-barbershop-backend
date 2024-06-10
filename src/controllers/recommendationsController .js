@@ -1,7 +1,7 @@
 const Recommendation = require('../models/recommendation');
 const recommendationService = require('../services/recommendation.service');
 const getTemplateHTMLOpinion = require('../templates/templateEmailOpinion');
-// const { sendMail } = require('../services/email.service'); // No está definido en este código, asegúrate de importarlo si lo necesitas
+
 
 // Obtener todas las recomendaciones
 const getRecommendations = async (req, res, next) => {
