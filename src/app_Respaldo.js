@@ -137,7 +137,7 @@ const moverCitaARegistro = async (cita, estado) => {
 // hacer cada 10 minutos de 10am a 10pm (se restan las 6h de adelanto del server)
 
 //Cada hora se ejecuta en un horario de 10am-12pm
-cron.schedule('*/10 * * * *', () => {
+cron.schedule('*/2 * * * *', () => {
     actualizarEstadoCitas();
 });
 

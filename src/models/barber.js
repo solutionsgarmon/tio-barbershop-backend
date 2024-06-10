@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
 const barberoSchema = new mongoose.Schema({
-   barberia_asignada: {
-    type: String,
-     default: ''
+   barberias_asignadas: {
+    type: Array,
+     default: []
   },
    nombre: {
     type: String,
@@ -125,6 +125,11 @@ const barberoSchema = new mongoose.Schema({
     rol: {
     type: String,
     default: "BARBERO"
+  },
+
+  esAdmin: {
+    type: String,
+    default: "NO"
   },
  
   estatus: {

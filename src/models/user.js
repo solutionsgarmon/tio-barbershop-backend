@@ -8,6 +8,9 @@ const userSchema = new mongoose.Schema({
   correo: {
     type: String,
     required: true
+  },    telefono: {
+    type: String,
+    default: "" 
   },
   password: {
     type: String,
@@ -17,13 +20,14 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: "CLIENTE" 
   },
- imagen: {
+    telefono: {
     type: String,
-    default: ""
-   },
+    default: "" 
+  },
+ imagenes: [],
 
+  
   datos_personales: {
-      telefono: { type: String, default: "" },
       fecha_nacimiento: { type: String, default: "" },
       direccion: { type: String, default: "" },
       ciudad: { type: String, default: "" },

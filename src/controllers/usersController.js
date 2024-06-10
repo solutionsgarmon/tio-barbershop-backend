@@ -56,7 +56,7 @@ const existeUsuario = async (req, res, next) => {
 
 const createUser = async (req, res, next) => {
   console.log("createUser()", req.body);
-  const { nombre, correo, password, imagen,datos_personales = "", historial_servicios = [] } = req.body;
+  const { nombre, correo, password,telefono, imagenes,datos_personales = "", historial_servicios = [] } = req.body;
 
   try {
     // Verificar si el correo electrónico ya está en uso
@@ -72,10 +72,11 @@ const createUser = async (req, res, next) => {
     const nuevoUsuario = new USERS({
       nombre,
       correo,
+      telefono,
       password: hashedPassword,
       datos_personales,
       historial_servicios,
-      imagen,
+      imagenes,
     });
 
     // Guardar el nuevo usuario en la base de datos
@@ -111,7 +112,10 @@ const deleteUser = async (req, res, next) => {
 
 const updateUser = async (req, res, next) => {
      const { id } = req.params; 
-    const updateFields = req.body; 
+    let updateFields = req.body; 
+    if(updateFields.password){
+       updateFields.password = await bcrypt.hash( updateFields.password, 10); 
+    }
 
     try {
         const updatedUser = await USERS.findByIdAndUpdate(
@@ -125,7 +129,7 @@ const updateUser = async (req, res, next) => {
         }
 
         console.log("[Éxito] Usuario actualizado:",);
-        res.json({  error: null, success: true, message: "Usuario actualizado exitosamente" });
+        res.json({  data:updatedUser,error: null, success: true, message: "Usuario actualizado exitosamente" });
     } catch (error) {
         console.error("Error al actualizar el usuario:", error);
         res.json({  error: true, success: false, message: "No se pudo actualizar el usuario"});

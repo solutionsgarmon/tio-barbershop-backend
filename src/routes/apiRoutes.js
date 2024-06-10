@@ -8,8 +8,11 @@ const barbersController = require("../controllers/barbersController");
 const adminsController = require("../controllers/adminsController");
 const cursosController = require("../controllers/cursosController");
 const citasController = require("../controllers/citasController");
+const citasRegistroController = require("../controllers/citas_registroController");
 const usersController = require("../controllers/usersController");
 const servicesController= require("../controllers/servicesController");
+const messageController= require("../controllers/messageController");
+const appSettingsController = require('../controllers/appSettingsController');
 
 //SECURITY
 router.post('/create-session', authController.createSession);
@@ -19,20 +22,20 @@ router.post('/login', authController.loginUser);
 
  //Clientes 
  router.get('/users',usersController.getUsers);
-  router.get('/users/existe-usuario', usersController.existeUsuario);
+ router.get('/users/existe-usuario', usersController.existeUsuario);
  router.post('/users',usersController.createUser);
  router.delete('/users',usersController.deleteUser);
  router.patch('/users/:id', usersController.updateUser);
  
 // BARBERS
-router.get('/barbers', barbersController.getBarbers);
-router.get('/barber/horario-disponible', barbersController.getHorarioDisponibleBarbero);
 router.get('/barber/:id', barbersController.getBarberById);
-
-router.get('/barbers', barbersController.createBarber);
+router.get('/barbers', barbersController.getBarbers);
+router.post('/barbers', barbersController.createBarber);
+router.post('/barber/horario-disponible', barbersController.getHorarioDisponibleBarbero);
+router.patch('/barbers/update/:id', barbersController.updateBarber);
 router.patch('/barbers/update-password/:id', barbersController.updatePassword);
 router.delete('/barbers/:id', barbersController.deleteBarber);
-router.patch('/barbers/:id', barbersController.updateBarber);
+
 
 //ADMINS
 router.get('/admins', adminsController.getAdmins);
@@ -61,9 +64,24 @@ router.patch('/products/:id', productsController.updateProduct);
 
 // CITAS
 router.get('/citas', citasController.getCitas);
+router.get('/citas/getByIdCorreo/:correo', citasController.getCitasCliente);
+router.get('/citas/getByIdBarbero/:id', citasController.getCitasBarbero);
+router.get('/citas/getPendientesByIdBarbero/:id', citasController.getCitasPendientesBarbero);
 router.post('/citas', citasController.createCita);
 router.delete('/citas/:id', citasController.deleteCita);
 router.patch('/citas/:id', citasController.updateCita);
+
+// CITAS_REGISTRO
+router.get('/citas_registro/getCompletadasByIdBarbero/:id', citasRegistroController.getCitasRegistroCompletadasBarbero);
+router.get('/citas_registro/getCanceladasByIdBarbero/:id', citasRegistroController.getCitasRegistroCanceladasBarbero);
+router.get('/citas_registro', citasRegistroController.getCitasRegistro);
+router.get('/citas_registro/getByIdCorreo/:correo', citasRegistroController.getCitasRegistroCliente);
+router.get('/citas_registro/getByIdBarbero/:id', citasRegistroController.getCitasRegistroBarbero);
+router.post('/citas_registro', citasRegistroController.createCitaRegistro);
+router.delete('/citas_registro/:id', citasRegistroController.deleteCitaRegistro);
+router.patch('/citas_registro/:id', citasRegistroController.updateCitaRegistro);
+
+
 
 
 // SERVICES
@@ -71,6 +89,16 @@ router.get('/services', servicesController.getServices);
 router.post('/services', servicesController.createService);
 router.delete('/services/:id', servicesController.deleteService);
 router.patch('/services/:id', servicesController.updateService);
+
+//MESSAGES
+router.post('/send-message',messageController.sendMessage);
+router.post('/send-whasapp-message',messageController.sendWhatsappMessage);
+
+//APP SETTINGS
+router.get('/app-settings', appSettingsController.getApps);
+//router.post('/app-settings', appSettingsController.createApp); //No es necesario mas post
+router.patch('/app-settings/:id', appSettingsController.updateApp);
+router.delete('/app-settings/:id', appSettingsController.deleteApp);
 
 /*
 // RECOMMENDATIONS

@@ -177,7 +177,10 @@ const barberiaSchema = new mongoose.Schema({
       }
     }
   },
-  barberos: [],
+  barberos: {
+        type: Array,
+        default: []
+      },
   productos: [],
   servicios: []
 });

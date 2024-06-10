@@ -89,8 +89,7 @@ const getHorarioDisponibleBarbero = async (req, res, next) => {
             if (cita.tipo_cita == "CITA") {
               if (
                 fecha_actual >= fecha_cita_inicio && fecha_actual <= fecha_cita_fin &&
-                // hora >= horaInicioCita && hora < horaFinCita
-                 hora > horaInicioCita-service.duracion && hora < horaFinCita
+                hora >= horaInicioCita && hora < horaFinCita
               ) {
                 horaDisponible = false;
                 break;
@@ -99,39 +98,35 @@ const getHorarioDisponibleBarbero = async (req, res, next) => {
               // ES DESCANSO
               if(cita.fecha_asignada==cita.fecha_asignada_fin ){
                   //Es descanso de 1 dia
+                 console.log(">Es descanso de 1 dia")
                if (fecha_actual >= fecha_cita_inicio && fecha_actual <= fecha_cita_fin &&
-                hora > horaInicioCita-service.duracion && hora < horaFinCita
-                //  hora >= horaInicioCita && hora < horaFinCita
-                 ) {
+                 hora >= horaInicioCita && hora < horaFinCita) {
                  horaDisponible = false;
                  break;
               }
 
               }else{
                  //ES DESCANSO DE VARIOS DIAS!!
-                // console.log(">Es descanso de varios dias - fecha_actual - fecha_cita_inicio",fecha_actual, "-",fecha_cita_inicio)
+                 console.log(">Es descanso de varios dias - fecha_actual - fecha_cita_inicio",fecha_actual, "-",fecha_cita_inicio)
                 if (fecha_actual.getTime() == fecha_cita_inicio.getTime() ) {
                    //Es el primer dia del descanso
-                    // if(hora > (horaInicioCita-service.duracion) ){
-                        if(hora > horaInicioCita){
+                    if(hora > (horaInicioCita-service.duracion) ){
                      horaDisponible = false;
                      break;
                     }
                   
                   }
-                else if(fecha_actual.getTime() == fecha_cita_fin.getTime()){
-                   //Es el ultimo dia del sescanso 
-                     if(hora < horaFinCita ){
-                     horaDisponible = false;
-                     break;
-                   }
-                 }
-                 else if(( fecha_actual.getTime() >fecha_cita_inicio.getTime()) &&(fecha_actual.getTime() < fecha_cita_fin.getTime()) ){
-                  //Son los dias del medio 
-                    horaDisponible = false;
-                    break;
-                    }
-                }    
+                //else if(fecha_actual == fecha_cita_fin){
+                //    //Es el ultimo dia del sescanso 
+                //      if(hora < horaInicioCita ){
+                //      horaDisponible = false;
+                //      break;
+                //    }
+                //  }else{
+                //    horaDisponible = false;
+                //    break;
+                //  }
+              }    
             }
           }// FIN FOR INTERNO
 

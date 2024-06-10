@@ -54,8 +54,8 @@ const citaSchema = new mongoose.Schema({
   },
     estatus: {
       type: String,
-      enum: ['PENDIENTE'],
-     default: "PENDIENTE"
+          enum: ['COMPLETADA', 'CANCELADA'],
+     default: "COMPLETADA"
     },
   notas: {
     type: String
@@ -96,6 +96,6 @@ const citaSchema = new mongoose.Schema({
   }
 });
 
-const Cita = mongoose.model('citas', citaSchema);
+const Cita = mongoose.model('citas_registro', citaSchema);
 
 module.exports = Cita;

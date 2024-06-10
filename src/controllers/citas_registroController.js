@@ -1,10 +1,11 @@
-const Cita = require('../models/cita');
- const { sendNotificationCreationCita, sendNotificationCreationDescanso } = require('../services/message.service');
+const Cita_Registro = require('../models/cita_registro');
+const { sendNotificationCancelCitaCliente, sendNotificationCancelCitaBarbero } = require('../services/message.service');
+
 
 // Obtener todas las citas
-const getCitas = async (req, res, next) => {
+const getCitasRegistro = async (req, res, next) => {
   try {
-    const citas = await Cita.find();
+    const citas = await Cita_Registro.find();
     res.json({ data: citas, error: null , success: true});
   } catch (error) {
     console.error("Error al obtener los documentos de CITAS:", error);
@@ -12,12 +13,12 @@ const getCitas = async (req, res, next) => {
   }
 };
 
-const getCitasCliente = async (req, res, next) => {
+const getCitasRegistroCliente = async (req, res, next) => {
   console.log("getCitasCliente()");
   const { correo } = req.params;
   
   try {
-    const citas = await Cita.find({ "datos_cliente.correo": correo });
+    const citas = await Cita_Registro.find({ "datos_cliente.correo": correo });
     
     if (!citas || citas.length === 0) {
       // Si no se encuentra ninguna cita, enviar una respuesta indicando que no se encontraron citas para ese correo
@@ -33,12 +34,12 @@ const getCitasCliente = async (req, res, next) => {
   }
 };
 
-const getCitasBarbero= async (req, res, next) => {
+const getCitasRegistroBarbero= async (req, res, next) => {
   console.log("getCitasBarbero()");
   const { id } = req.params;
   
   try {
-    const citas = await Cita.find({ "barbero_asignado": id });
+    const citas = await Cita_Registro.find({ "barbero_asignado": id });
     
  if (!citas || citas.length === 0) {
       // Si no se encuentra ninguna cita completada, enviar una respuesta indicando que no se encontraron citas Pendientes para ese barbero
@@ -54,13 +55,13 @@ const getCitasBarbero= async (req, res, next) => {
   }
 };
 
-const getCitasCompletadasBarbero = async (req, res, next) => {
+const getCitasRegistroCompletadasBarbero = async (req, res, next) => {
   console.log("getCitasCompletadasBarbero()");
   const { id } = req.params;
   
   try {
     // Filtrar las citas por el estado "COMPLETADA"
-    const citas = await Cita.find({ "barbero_asignado": id, "estatus": "COMPLETADA" });
+    const citas = await Cita_Registro.find({ "barbero_asignado": id, "estatus": "COMPLETADA" });
     
     if (!citas || citas.length === 0) {
       // Si no se encuentra ninguna cita completada, enviar una respuesta indicando que no se encontraron citas Pendientes para ese barbero
@@ -79,12 +80,12 @@ const getCitasCompletadasBarbero = async (req, res, next) => {
 
 
 
-const getCitasPendientesBarbero= async (req, res, next) => {
+const getCitasRegistroPendientesBarbero= async (req, res, next) => {
   const { id } = req.params;
    console.log("getCitasPendientesBarbero()",id);
   try {
     // Filtrar las citas por el estado "COMPLETADA"
-    const citas = await Cita.find({ "barbero_asignado": id, "estatus": "PENDIENTE" });
+    const citas = await Cita_Registro.find({ "barbero_asignado": id, "estatus": "PENDIENTE" });
     
     if (!citas || citas.length === 0) {
       // Si no se encuentra ninguna cita completada, enviar una respuesta indicando que no se encontraron citas Pendientes para ese barbero
@@ -99,13 +100,13 @@ const getCitasPendientesBarbero= async (req, res, next) => {
   }
 };
 
-const getCitasCanceladasBarbero= async (req, res, next) => {
-  console.log("getCitasCanceladasBarbero()");
+const getCitasRegistroCanceladasBarbero= async (req, res, next) => {
+  console.log("getCitasRegistroCanceladasBarbero()");
   const { id } = req.params;
   
   try {
     // Filtrar las citas por el estado "COMPLETADA"
-    const citas = await Cita.find({ "barbero_asignado": id, "estatus": "CANCELADA" });
+    const citas = await Cita_Registro.find({ "barbero_asignado": id, "estatus": "CANCELADA" });
     
     if (!citas || citas.length === 0) {
       // Si no se encuentra ninguna cita completada, enviar una respuesta indicando que no se encontraron citas Pendientes para ese barbero
@@ -121,21 +122,20 @@ const getCitasCanceladasBarbero= async (req, res, next) => {
 };
 
 
+
 // Crear una nueva cita
-const createCita = async (req, res, next) => {
+const createCitaRegistro = async (req, res, next) => {
   try {
-    const newCita = new Cita(req.body);
-    await newCita.save();
-    //TODO - Falla deployado
+    const newCita = new Cita_Registro(req.body);
+    await newCita.save(); 
 
-    if(newCita.tipo_cita=="DESCANSO")
-     await sendNotificationCreationDescanso(newCita)
-    
-
-    if(newCita.tipo_cita=="CITA")
-    await sendNotificationCreationCita(newCita)
+    if(newCita.estatus == "CANCELADA"){
+ 
+      await sendNotificationCancelCitaCliente(newCita)
+      await sendNotificationCancelCitaBarbero(newCita)
+    }
+    console.error("[Éxito] Nueva cita creada:");
    
-    console.error("[Éxito] Nueva cita creada:", );
     res.status(201).json({ data: newCita, error: null, success: true });
   } catch (error) {
     console.error("Error al crear una nueva cita:", error);
@@ -144,14 +144,14 @@ const createCita = async (req, res, next) => {
 };
 
 // Actualizar una cita existente
-const updateCita = async (req, res, next) => {
+const updateCitaRegistro = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const updatedCita = await Cita.findByIdAndUpdate(id, req.body, { new: true });
+    const updatedCita = await Cita_Registro.findByIdAndUpdate(id, req.body, { new: true });
     if (!updatedCita) {
-      return res.status(404).json({ success: false, error: 'Cita no encontrada' });
+      return res.status(404).json({ success: false, error: 'Cita_Registro no encontrada' });
     }
-    console.error("[Éxito] Cita actualizada:", updatedCita);
+    console.error("[Éxito] Cita_Registro actualizada:", updatedCita);
     res.json({ data: updatedCita, error: null, success: true });
   } catch (error) {
     console.error("Error al actualizar la cita:", error);
@@ -160,14 +160,14 @@ const updateCita = async (req, res, next) => {
 };
 
 // Eliminar una cita existente
-const deleteCita = async (req, res, next) => {
+const deleteCitaRegistro = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const deletedCita = await Cita.findByIdAndDelete(id);
+    const deletedCita = await Cita_Registro.findByIdAndDelete(id);
     if (!deletedCita) {
-      return res.status(404).json({ success: false, error: 'Cita no encontrada' });
+      return res.status(404).json({ success: false, error: 'Cita_Registro no encontrada' });
     }
-    console.error("[Éxito] Cita eliminada:", deletedCita);
+    console.error("[Éxito] Cita_Registro eliminada:", deletedCita);
     res.json({ data: {}, error: null, success: true });
   } catch (error) {
     console.error("Error al eliminar la cita:", error);
@@ -176,12 +176,13 @@ const deleteCita = async (req, res, next) => {
 };
 
 module.exports = {
-  getCitas,
-  createCita,
-  updateCita,
-  deleteCita,getCitasBarbero,
-  getCitasCliente,
-  getCitasPendientesBarbero,
-  getCitasCompletadasBarbero,
-  getCitasCanceladasBarbero
+  getCitasRegistro,
+  createCitaRegistro,
+  updateCitaRegistro,
+  deleteCitaRegistro,
+  getCitasRegistroBarbero,
+  getCitasRegistroCliente,
+  getCitasRegistroPendientesBarbero,
+  getCitasRegistroCompletadasBarbero,
+  getCitasRegistroCanceladasBarbero
 };

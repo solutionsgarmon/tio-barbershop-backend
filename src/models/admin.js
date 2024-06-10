@@ -13,9 +13,9 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-    imagen: {
-    type: String,
-    required: true
+    imagenes: {
+    type: Array,
+    default:[]
   },
     rol: {
     type: String,
@@ -28,11 +28,9 @@ const userSchema = new mongoose.Schema({
       ciudad: { type: String, default: "" },
       estado: { type: String, default: "" },
       cp: { type: String, default: "" },
-      imagen: { type: String, default: "" }
-  
   },
 });
 
-const Admin = mongoose.model('administradores', userSchema);
+const Admin = mongoose.model('admins', userSchema);
 
 module.exports = Admin;
