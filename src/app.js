@@ -34,7 +34,7 @@ const PORT = process.env.PORT || 3000;
 
 //Actualizar el estatus de la cita
 const actualizarEstadoCitas = async () => {
-    console.log("[******** Ejecución JOB *********]")
+    console.log("* J O B * [ejecucion] actualizarEstadoCitas()")
     try {
         const fechaReal = new Date();  
         console.log("fecha server (fly.io):",fechaReal)
@@ -112,6 +112,7 @@ const actualizarEstadoCitas = async () => {
 };
 
 const moverCitaARegistro = async (cita, estado) => {
+     console.log("* J O B * [ejecucion] moverCitaARegistro()")
     try {
         const citaClonada = await Cita.findById(cita._id).lean();
         
@@ -128,18 +129,45 @@ const moverCitaARegistro = async (cita, estado) => {
     }
 };
 
+const eliminarCitasAntiguas = async () => {
+    console.log("* J O B * [ejecucion] eliminarCitasAntiguas()")
+  const fechaLimite = new Date();
+  fechaLimite.setMonth(fechaLimite.getMonth() -32); // Restar 3 meses a la fecha actual
 
-// Programa un cronjob para ejecutar la función de actualización cada diez minutos, solo de 10:00 am a 10:00 pm
-// cron.schedule('*/10 10-22 * * *', () => {
-//     actualizarEstadoCitas();
-// });
+  try {
+    const result = await Cita_Registro.deleteMany({ 
+      fecha_creacion: { 
+        $lt: fechaLimite.toISOString() 
+      } 
+    });
+    console.log(`Se eliminaron ${result.deletedCount} citas antiguas`);
+  } catch (error) {
+  }
+};
 
-// hacer cada 10 minutos de 10am a 10pm (se restan las 6h de adelanto del server)
+
+
+
+
+//* * * * * * * * * * *     J    O     B     S      * * * * * * * * * * * * * * * * *
 
 //Cada hora se ejecuta en un horario de 10am-12pm
 cron.schedule('*/10 * * * *', () => {
     actualizarEstadoCitas();
 });
+
+// Programar el cron job para que se ejecute diariamente a la medianoche
+cron.schedule('0 0 * * *', () => {
+    eliminarCitasAntiguas();
+});
+
+// Cron job para eliminar citas antiguas el día 1 de cada mes
+// cron.schedule('0 0 1 * *', () => {
+//   eliminarCitasAntiguas();
+// });
+
+
+
 
 app.listen(PORT, () => {
   console.log(`Servidor en ejecución en el puerto ${PORT}`);

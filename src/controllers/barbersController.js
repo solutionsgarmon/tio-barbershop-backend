@@ -204,9 +204,9 @@ const updateBarber = async (req, res, next) => {
   console.log("updateBarber()")
   try {
     const { id } = req.params;
-     if(req.body.password){
-       req.body.password = await bcrypt.hash( req.body.password, 10); 
-    }
+    //  if(req.body.password){
+    //    req.body.password = await bcrypt.hash( req.body.password, 10); 
+    // }
 
     const updatedBarber = await Barber.findByIdAndUpdate(id, req.body, { new: true });
     if (!updatedBarber) {
